@@ -28,31 +28,33 @@ const timeline = [
   },
 ]
 
+const NOW_TIMESTAMP = Date.now()
+
 function App() {
-  const [theme, setTheme] = useState('dark')
-  const [particleMode, setParticleMode] = useState('attract')
   const [mouse, setMouse] = useState({ x: 50, y: 50 })
   const [repos, setRepos] = useState([])
   const [repoLoading, setRepoLoading] = useState(true)
   const [repoError, setRepoError] = useState('')
+  const [activeLanguage, setActiveLanguage] = useState('All')
   const canvasRef = useRef(null)
   const pointerRef = useRef({ x: 0, y: 0 })
 
-  const overviewCards = useMemo(
+  const focusTracks = useMemo(
     () => [
       {
-        title: 'Research Focus',
+        title: 'AI-Assisted Materials Design',
         content:
-          'AI-driven research for materials design, sensor technology, and signal processing.',
+          'Agentic pipelines, LLM-guided hypothesis generation, and large design-space exploration.',
       },
       {
-        title: 'Featured Topics',
-        content: 'EMI, graph learning, materials informatics, scientific machine learning.',
+        title: 'Next-Gen Signal Intelligence',
+        content:
+          'Data-efficient sensing and model-driven interpretation for robust real-world deployment.',
       },
       {
-        title: 'Collaboration',
+        title: 'Research-to-Engineering Delivery',
         content:
-          'Open to research and engineering collaboration in AI for science and sensing.',
+          'Bridging publication-grade methods with practical tooling and reproducible code releases.',
       },
     ],
     [],
@@ -64,7 +66,7 @@ function App() {
     const x = ((clientX - rect.left) / rect.width) * 100
     const y = ((clientY - rect.top) / rect.height) * 100
     setMouse({ x, y })
-    pointerRef.current = { x: clientX, y: clientY }
+    pointerRef.current = { x: clientX, y: clientY + window.scrollY }
   }
 
   useEffect(() => {
@@ -137,10 +139,8 @@ function App() {
       const width = canvas.clientWidth
       const height = canvas.clientHeight
       const pointer = pointerRef.current
-      const particleColor =
-        theme === 'dark' ? 'rgba(147, 197, 253, 0.9)' : 'rgba(37, 99, 235, 0.75)'
-      const lineColor =
-        theme === 'dark' ? 'rgba(125, 211, 252, 0.16)' : 'rgba(59, 130, 246, 0.14)'
+      const particleColor = 'rgba(148, 163, 184, 0.8)'
+      const lineColor = 'rgba(56, 189, 248, 0.11)'
 
       ctx.clearRect(0, 0, width, height)
 
@@ -150,8 +150,7 @@ function App() {
         const dy = pointer.y - particle.y
         const dist = Math.hypot(dx, dy) || 1
         const forceBase = Math.min(1800 / (dist * dist), 0.32)
-        const direction = particleMode === 'attract' ? 1 : -1
-        const force = forceBase * direction
+        const force = forceBase
 
         particle.vx += (dx / dist) * force
         particle.vy += (dy / dist) * force
@@ -199,7 +198,50 @@ function App() {
       window.cancelAnimationFrame(animationId)
       window.removeEventListener('resize', resize)
     }
-  }, [particleMode, theme])
+  }, [])
+
+  const languageTabs = useMemo(() => {
+    const collected = repos
+      .map((repo) => repo.language)
+      .filter(Boolean)
+      .reduce((acc, language) => {
+        acc[language] = (acc[language] || 0) + 1
+        return acc
+      }, {})
+
+    const ranked = Object.entries(collected)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 4)
+      .map(([name]) => name)
+
+    return ['All', ...ranked]
+  }, [repos])
+
+  const displayedRepos = useMemo(() => {
+    const sorted = [...repos].sort((a, b) => {
+      if (b.stargazers_count !== a.stargazers_count) {
+        return b.stargazers_count - a.stargazers_count
+      }
+      return new Date(b.updated_at) - new Date(a.updated_at)
+    })
+
+    if (activeLanguage === 'All') {
+      return sorted.slice(0, 6)
+    }
+
+    return sorted.filter((repo) => repo.language === activeLanguage).slice(0, 6)
+  }, [activeLanguage, repos])
+
+  const stats = useMemo(() => {
+    const stars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0)
+    const forks = repos.reduce((sum, repo) => sum + repo.forks_count, 0)
+    const active = repos.filter((repo) => {
+      const days = (NOW_TIMESTAMP - new Date(repo.updated_at).getTime()) / 86400000
+      return days <= 180
+    }).length
+
+    return { stars, forks, active }
+  }, [repos])
 
   const handleCardTilt = (event) => {
     const card = event.currentTarget
@@ -216,12 +258,9 @@ function App() {
     event.currentTarget.style.transform = ''
   }
 
-  const nextTheme = theme === 'dark' ? 'light' : 'dark'
-  const nextParticleMode = particleMode === 'attract' ? 'repel' : 'attract'
-
   return (
     <main
-      className={`page page-${theme}`}
+      className="page"
       onPointerMove={handlePointerMove}
       style={{
         '--mouse-x': `${mouse.x}%`,
@@ -231,35 +270,58 @@ function App() {
       <canvas ref={canvasRef} className="particles-canvas" aria-hidden="true" />
 
       <header className="topbar">
-        <span className="tag">GitHub Homepage</span>
-        <div className="top-actions">
-          <button
-            type="button"
-            className="ghost-btn"
-            onClick={() => setParticleMode(nextParticleMode)}
-          >
-            Particles: {particleMode} (switch to {nextParticleMode})
-          </button>
-          <button
-            type="button"
-            className="ghost-btn"
-            onClick={() => setTheme(nextTheme)}
-          >
-            Theme: {theme} (switch to {nextTheme})
-          </button>
-        </div>
+        <span className="tag">AI x Research x Engineering</span>
+        <nav className="top-actions">
+          <a href="#projects">Projects</a>
+          <a href="#journey">Journey</a>
+          <a href="https://github.com/hguangshuai" target="_blank" rel="noreferrer">
+            GitHub
+          </a>
+        </nav>
       </header>
 
       <section className="hero">
-        <p className="eyebrow">Hi, I am</p>
-        <h1>Jerry Han</h1>
+        <p className="eyebrow">Guangshuai (Jerry) Han</p>
+        <h1>Designing AI systems for scientific discovery.</h1>
         <p className="subtitle">
-          AI-driven researcher advancing science with practical machine learning.
+          A unified portfolio for research, code, and real-world engineering translation.
         </p>
+        <div className="hero-cta">
+          <a href="#projects" className="primary-btn">
+            Explore Projects
+          </a>
+          <a
+            href="https://github.com/hguangshuai"
+            target="_blank"
+            rel="noreferrer"
+            className="ghost-btn"
+          >
+            Open GitHub
+          </a>
+        </div>
+      </section>
+
+      <section className="stats-grid">
+        <article className="stat-card">
+          <p>Total Repositories</p>
+          <h3>{repos.length}</h3>
+        </article>
+        <article className="stat-card">
+          <p>Total Stars</p>
+          <h3>{stats.stars}</h3>
+        </article>
+        <article className="stat-card">
+          <p>Total Forks</p>
+          <h3>{stats.forks}</h3>
+        </article>
+        <article className="stat-card">
+          <p>Active in 6 Months</p>
+          <h3>{stats.active}</h3>
+        </article>
       </section>
 
       <section className="overview-grid">
-        {overviewCards.map((item) => (
+        {focusTracks.map((item) => (
           <article key={item.title} className="overview-card">
             <h3>{item.title}</h3>
             <p>{item.content}</p>
@@ -267,15 +329,27 @@ function App() {
         ))}
       </section>
 
-      <section className="projects-section">
+      <section id="projects" className="projects-section">
         <div className="section-heading">
           <h2>Live Repositories</h2>
-          <p>Real-time stars and forks from GitHub API.</p>
+          <p>Auto-synced from GitHub API with live stars, forks, and stack tags.</p>
+        </div>
+        <div className="language-tabs">
+          {languageTabs.map((language) => (
+            <button
+              key={language}
+              type="button"
+              onClick={() => setActiveLanguage(language)}
+              className={activeLanguage === language ? 'tab active' : 'tab'}
+            >
+              {language}
+            </button>
+          ))}
         </div>
         {repoLoading ? <p className="repo-state">Loading repositories...</p> : null}
         {repoError ? <p className="repo-state">{repoError}</p> : null}
         <div className="repo-grid">
-          {repos.map((repo) => (
+          {displayedRepos.map((repo) => (
             <a
               key={repo.id}
               href={repo.html_url}
@@ -297,10 +371,10 @@ function App() {
         </div>
       </section>
 
-      <section className="timeline-section">
+      <section id="journey" className="timeline-section">
         <div className="section-heading">
           <h2>Research Journey</h2>
-          <p>Scroll to explore key milestones.</p>
+          <p>Milestones from sensing systems to full AI-for-science pipelines.</p>
         </div>
         <div className="timeline">
           {timeline.map((item) => (
@@ -316,15 +390,17 @@ function App() {
       </section>
 
       <footer className="links">
+        <a href="https://hguangshuai.github.io/" target="_blank" rel="noreferrer">
+          Home
+        </a>
         <a href="https://github.com/hguangshuai" target="_blank" rel="noreferrer">
           GitHub
         </a>
         <a href="https://guangshuaihan.com/" target="_blank" rel="noreferrer">
-          Website
+          Main Website
         </a>
-        <a href="mailto:youremail@example.com">Email</a>
         <a href="https://github.com/hguangshuai?tab=repositories" target="_blank" rel="noreferrer">
-          Repositories
+          All Repositories
         </a>
       </footer>
     </main>
