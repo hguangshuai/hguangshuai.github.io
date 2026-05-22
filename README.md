@@ -1,7 +1,5 @@
 # Playground Mode
 
-This profile is currently running in experiment mode.
-
 ---
 
 ## Mini Game: Door Puzzle
