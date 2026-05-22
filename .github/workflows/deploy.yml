@@ -30,8 +30,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Resolve base path
+        id: base
+        run: |
+          if [[ "${{ github.event.repository.name }}" == "${{ github.repository_owner }}.github.io" ]]; then
+            echo "path=/" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=/${{ github.event.repository.name }}/" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build
-        run: BASE_PATH=/${{ github.event.repository.name }}/ npm run build
+        run: BASE_PATH=${{ steps.base.outputs.path }} npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

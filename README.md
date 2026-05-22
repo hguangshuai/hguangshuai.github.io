@@ -27,14 +27,20 @@ npm run dev
 
 ## 部署到 GitHub Pages
 
-1. 新建一个 GitHub 仓库（比如：`homepage`）
+推荐两种仓库方式（本项目都支持）：
+
+- 用户主页仓库：`<用户名>.github.io`（例如 `hguangshuai.github.io`），发布地址是根域名
+- 普通仓库：例如 `homepage`，发布地址会带仓库名路径
+
+1. 新建一个 GitHub 仓库（建议：`hguangshuai.github.io`）
 2. 把这个目录推到远程 `main` 分支
 3. 在 GitHub 仓库设置里启用 Pages（Source 选择 GitHub Actions）
 4. 每次 push 到 `main` 会自动构建并发布
 
-发布后地址通常是：
+发布后地址：
 
-`https://<你的用户名>.github.io/<仓库名>/`
+- 如果仓库是 `<用户名>.github.io`：`https://<你的用户名>.github.io/`
+- 如果是普通仓库：`https://<你的用户名>.github.io/<仓库名>/`
 
 ## 常用命令
 
