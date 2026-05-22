@@ -54,6 +54,14 @@ Rules:
 ## Dynamic Cards
 
 <p>
-  <img height="160" src="https://github-readme-stats.vercel.app/api?username=hguangshuai&show_icons=true&theme=transparent&hide_border=true" alt="GitHub stats" />
-  <img height="160" src="https://github-readme-stats.vercel.app/api/top-langs/?username=hguangshuai&layout=compact&theme=transparent&hide_border=true" alt="Top languages" />
+  <img src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=hguangshuai&theme=github_dark" alt="Profile summary" />
+</p>
+
+<p>
+  <img src="https://streak-stats.demolab.com?user=hguangshuai&theme=transparent&hide_border=true" alt="Streak stats" />
+</p>
+
+<p>
+  <img src="https://img.shields.io/github/followers/hguangshuai?style=for-the-badge" alt="Followers badge" />
+  <img src="https://img.shields.io/github/stars/hguangshuai/EMI-Net?style=for-the-badge" alt="EMI-Net stars badge" />
 </p>
