@@ -21,9 +21,10 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           user: hguangshuai
           filename: github-metrics.svg
-          template: classic
+          template: terminal
           base: header, activity, community, repositories, metadata
           config_timezone: America/New_York
+          config_display: large
           plugin_languages: yes
           plugin_languages_ignored: html, css
           plugin_languages_limit: 8
